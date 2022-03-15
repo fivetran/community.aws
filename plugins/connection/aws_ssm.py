@@ -44,6 +44,10 @@ options:
     vars:
     - name: ansible_aws_ssm_region
     default: 'us-east-1'
+  bucket_region:
+    description: The region the SSM Bucket is located, ignored if unset
+    vars:
+    - name: ansible_aws_ssm_bucket_region
   bucket_name:
     description: The name of the S3 bucket used for file transfers.
     vars:
@@ -621,7 +625,7 @@ class Connection(ConnectionBase):
 
     def _get_url(self, client_method, bucket_name, out_path, http_method, profile_name, extra_args=None):
         ''' Generate URL for get_object / put_object '''
-        region_name = self.get_option('region') or 'us-east-1'
+        region_name = self.get_option('bucket_region') or self.get_option('region') or 'us-east-1'
         client = self._get_boto_client('s3', region_name=region_name, profile_name=profile_name)
         params = {'Bucket': bucket_name, 'Key': out_path}
         if extra_args is not None:
